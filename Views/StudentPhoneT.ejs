@@ -1,0 +1,450 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= user.username %>'s Phone Book</title>
+  <!-- Optional: Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+        integrity="sha512-Fo3rlrZj/k7ujTnH/PRoQyJNnZ2OJJF+L0ISZrX5FvM6xU2fxhqHKqBsoj8N4e+LZ5T6N9cEplCW1z6+Rm4o5Q==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* General Body & Fixed Background */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("/Views/BG1.png") no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Banner Styling */
+    .banner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      padding: 40px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      border-bottom: 3px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .banner h1 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-63%);
+      margin: 0;
+      font-size: 35px;
+      font-weight: 600;
+      color: #333;
+    }
+    /* Back Button */
+    .home-button {
+      position: absolute;
+      left: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: #9b4dff;
+      padding: 12px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+    }
+    .home-button i {
+      font-size: 28px;
+    }
+    .home-button:hover {
+      background-color: #7a00ff;
+      transform: translateY(-2px);
+    }
+
+    /* Phone Book Container */
+    #phoneBook {
+      padding: 120px 20px 20px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Contact Entry Styling */
+    .contact {
+      position: relative;
+      width: 800px;
+      margin: 10px auto;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      height: 70px;
+      padding-right: 60px;
+    }
+    .contact-name {
+      flex: 1;
+      font-size: 1.8rem;
+      padding-left: 20px;
+      color: #333;
+    }
+    .contact-number {
+      flex: 1;
+      text-align: right;
+      font-size: 1.8rem;
+      text-decoration: underline;
+      color: #333;
+      margin-right: 20px;
+    }
+    /* Delete Button Styling */
+    .delete-button {
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 0.5em;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1em;
+      transition: transform 0.2s ease;
+    }
+    .trash-svg {
+      width: 2em;
+      height: 2em;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      overflow: visible;
+    }
+    #lid-group {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .delete-button:hover #lid-group {
+      transform: rotate(-28deg) translateY(2px);
+    }
+    .delete-button:active #lid-group {
+      transform: rotate(-12deg) scale(0.98);
+    }
+    .delete-button:hover .trash-svg {
+      transform: scale(1.08) rotate(3deg);
+    }
+    .delete-button:active .trash-svg {
+      transform: scale(0.96) rotate(-1deg);
+    }
+    /* Popup Styling for Adding Contact */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 25px;
+      border: 2px solid #ccc;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+      box-sizing: border-box;
+    }
+    .popup input {
+      width: 88%;
+      padding: 15px;
+      margin: 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .popup button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 48%;
+      margin: 5px 0;
+      transition: background-color 0.3s ease;
+      border: 2px solid #424242;
+    }
+    .popup button:hover {
+      background-color: #45a049;
+    }
+    .popup .cancel {
+      background-color: red;
+    }
+    .popup .cancel:hover {
+      background-color: #c00000;
+    }
+    /* Error Popup Styling */
+    .error-popup {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 1100;
+      max-width: 80%;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #721c24;
+      box-sizing: border-box;
+    }
+    .close-error {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      position: absolute;
+      top: 3px;
+      right: 1px;
+      cursor: pointer;
+      color: #721c24;
+    }
+
+    /* Add Contact Button */
+    .add-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 70px;
+      height: 70px;
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #040404;
+      font-size: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.3s;
+    }
+    .add-button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    .add-button .plus-sign {
+      font-size: 36px;
+      line-height: 1;
+    }
+    /* Purple hover effect for back button */
+    .home-button:hover {
+      background-color: #7a00ff;
+      transform: translateY(-3px);
+    }
+    /* Custom Delete Confirmation Popup Styling */
+    .confirmation-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgb(255, 216, 216);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      z-index: 1100;
+      text-align: center;
+      border: 2px solid #040404;
+      box-sizing: border-box;
+    }
+    .confirmation-popup p {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .confirmation-popup button {
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #040404;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0 10px;
+      transition: background-color 0.3s ease;
+    }
+    .confirmation-popup button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    .confirmation-popup .cancel {
+      background-color: red;
+    }
+    .confirmation-popup .cancel:hover {
+      background-color: #c00000;
+      transform: translateY(-2px);
+    }
+    #mobilePopup {
+    display: none;
+  }
+
+  /* when width ≤750px OR height ≤500px, show overlay & disable scrolling */
+  @media (max-width: 750px), (max-height: 500px) {
+    html, body {
+      overflow: hidden;    /* lock the viewport */
+      height: 100%;        /* ensure no extra scroll space */
+    }
+    #mobilePopup {
+      display: flex;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #mobilePopup .popup-content {
+      background: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 8px;
+      font-size: 1.25rem;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  }
+  </style>
+</head>
+<body>
+  <div id="mobilePopup">
+    <div class="popup-content">
+      Your screen is too small for this view
+    </div>
+  </div>
+  <!-- Banner -->
+  <div class="banner">
+    <button class="home-button"
+        onclick="window.location.href='/student-teacher-view/<%= user.id %>'">
+    <i class="fas fa-arrow-left"></i>
+        <span>Back</span>
+    </button>
+    <h1 id="phoneBookTitle"><%= user.username %>'s Phone Book</h1>
+  </div>
+  
+  <% if (errors && errors.length > 0) { %>
+    <div class="error-popup" id="errorPopup" style="display: block;">
+      <button class="close-error" onclick="closeError()">X</button>
+      <span id="errorMessageText"><%= errors.join(", ") %></span>
+    </div>
+  <% } else { %>
+    <div class="error-popup" id="errorPopup" style="display: none;">
+      <button class="close-error" onclick="closeError()">X</button>
+      <span id="errorMessageText"></span>
+    </div>
+  <% } %>
+  
+  <!-- Phone Book -->
+  <div id="phoneBook">
+    <div id="contactList">
+      <% if (contacts && contacts.length > 0) { %>
+        <% contacts.forEach(function(contact) { %>
+          <div class="contact">
+            <div class="contact-name"><%= contact.contactName %></div>
+            <div class="contact-number"><%= contact.phoneNumber %></div>
+            <button type="button" class="delete-button" aria-label="Delete item" onclick="openDeletePopup('<%= contact.id %>')">
+              <svg class="trash-svg" viewBox="64 -10 64 74" xmlns="http://www.w3.org/2000/svg">
+                <g id="trash-can">
+                  <rect x="16" y="24" width="32" height="30" rx="3" ry="3" fill="#e74c3c"></rect>
+                  <g transform-origin="12 18" id="lid-group">
+                    <rect x="12" y="12" width="40" height="6" rx="2" ry="2" fill="#c0392b"></rect>
+                    <rect x="26" y="8" width="12" height="4" rx="2" ry="2" fill="#c0392b"></rect>
+                  </g>
+                </g>
+              </svg>
+            </button>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p></p>
+      <% } %>
+    </div>
+  </div>
+  
+  <!-- Popup for Adding Contact -->
+  <div class="popup" id="popup">
+    <h3>Add a New Contact</h3>
+    <form id="contactForm" action="/create-phoneT/<%= user.id %>" method="POST">
+      <input type="text" name="contactName" id="contactName" placeholder="Contact Name (Max 13 Characters)" required />
+      <input type="text" name="phoneNumber" id="contactNumber" placeholder="Phone Number (111-111-1111)" required />
+      <button type="button" onclick="saveContact()">Save</button>
+      <button type="button" class="cancel" onclick="closePopup()">Cancel</button>
+    </form>
+  </div>
+  
+  <!-- Delete Confirmation -->
+  <div class="confirmation-popup" id="deletePopup">
+    <p>Are you sure you want to delete this number?</p>
+    <button onclick="deleteConfirm()">Yes</button>
+    <button class="cancel" onclick="closeDeletePopup()">No</button>
+  </div>
+  
+  <!-- Add Contact Button -->
+  <div class="add-button" onclick="togglePopup()">
+    <div class="plus-sign">+</div>
+  </div>
+  
+  <script>
+    var currentDeleteId = null;
+    function togglePopup() {
+      var popup = document.getElementById('popup');
+      popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    }
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('contactName').value = '';
+      document.getElementById('contactNumber').value = '';
+    }
+    function saveContact() {
+      var name = document.getElementById('contactName').value.trim();
+      var number = document.getElementById('contactNumber').value.trim();
+      if (!name || !number) { showError("Please fill in both fields."); return; }
+      if (name.length > 13)       { showError("Name must be ≤13 chars."); return; }
+      if (!/^\d{3}-\d{3}-\d{4}$/.test(number)) { showError("Number must be 111-111-1111."); return; }
+      document.getElementById('contactForm').submit();
+    }
+    function showError(message) {
+      var ep=document.getElementById('errorPopup'),
+          et=document.getElementById('errorMessageText');
+      et.textContent=message; ep.style.display='block';
+    }
+    function closeError() {
+      document.getElementById('errorPopup').style.display='none';
+    }
+    function openDeletePopup(id) {
+      currentDeleteId = id;
+      document.getElementById('deletePopup').style.display='block';
+    }
+    function deleteConfirm() {
+      if (!currentDeleteId) return;
+      var f=document.createElement('form');
+      f.method='POST';
+      f.action='/delete-phoneT/<%= user.id %>/' + currentDeleteId;
+      document.body.appendChild(f);
+      f.submit();
+    }
+    function closeDeletePopup() {
+      document.getElementById('deletePopup').style.display='none';
+      currentDeleteId = null;
+    }
+  </script>
+</body>
+</html>

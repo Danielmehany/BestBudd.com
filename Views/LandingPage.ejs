@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Best Budd</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url("/Views/BG1.png") center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Full viewport height */
+    }
+
+    /* Main container holding the text and buttons */
+    .content {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent background */
+      padding: 50px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Welcome text styling */
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px; /* Reduced bottom margin to bring h3 closer */
+      color: #333;
+    }
+
+    /* Subheader styling */
+    h3 {
+      margin-top: 0;
+      margin-bottom: 30px; /* Adjust as needed for spacing from the buttons */
+      color: #333;
+    }
+
+    /* Button container */
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px; /* Spacing between buttons */
+    }
+
+    /* Buttons styling */
+    .login-button {
+      background-color: #9b4dff;
+      color: #fff;
+      border: 3px solid black; /* Thin black border */
+      padding: 20px 40px;
+      text-decoration: none;
+      font-size: 1.25rem;
+      border-radius: 8px;
+      transition: background-color 0.3s, transform 0.3s;
+      display: inline-block;
+    }
+    .login-button:hover {
+      background-color: #7a00ff;
+      transform: translateY(-3px);
+    }
+
+    /* Media queries for mobile devices */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+      .button-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Welcome to Best Budd!</h1>
+    <h3>
+      Your Own Online <span style="color: orange;">Best Buddy</span>
+    </h3>
+    <div class="button-container">
+      <a href="/teacher-login" class="login-button">Teacher</a>
+      <a href="/student-login" class="login-button">Student</a>
+    </div>
+  </div>
+</body>
+</html>

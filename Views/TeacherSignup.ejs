@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Portal - Sign Up</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      /* Background image (centered and covering the screen) */
+      background: url("/Views/BG1.png") center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .content {
+      background-color: rgba(255, 255, 255, 0.85); /* White, semi-transparent box */
+      padding: 60px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 360px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    input[type="email"],
+    input[type="text"],
+    input[type="password"] {
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid black;
+      border-radius: 6px;
+      background-color: #9b4dff;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    button:hover {
+      background-color: #7a00ff;
+      transform: translateY(-3px);
+    }
+    .close-error:hover {
+      background-color: transparent; /* Keeps the background unchanged */
+      transform: none;               /* Prevents the upward movement */
+    }
+
+    /* Media queries for mobile devices */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+      form {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+    /* Error Popup Styles */
+    #errorPopup {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #f8d7da;
+      color: #721c24;
+      padding: 27px;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      z-index: 999;
+      max-width: 90%;
+      box-sizing: border-box;
+    }
+    .close-error {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      cursor: pointer;
+      color: #721c24;
+    }
+    #errorMessageList {
+      margin: 0;
+      padding: 0;
+      list-style-type: disc;
+      text-align: left;
+    }
+    #errorMessageList li {
+      margin-left: 20px; /* indent list items slightly */
+    }
+  </style>
+</head>
+<body>
+  <!-- Error Popup (EJS): will only render if errors array is passed in and not empty -->
+  <% if (errors && errors.length > 0) { %>
+    <div id="errorPopup" style="display: block;">
+      <button class="close-error" onclick="document.getElementById('errorPopup').style.display='none'">X</button>
+      <ul id="errorMessageList">
+        <% errors.forEach(function(error) { %>
+          <li><%= error %></li>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+
+  <div class="content">
+    <h1>Teacher Sign Up</h1>
+    <!-- Note the updated action attribute below -->
+    <form id="signupForm" action="/teacher-signup" method="POST">
+      <input type="text" name="username" placeholder="Username (6-20 Characters)" required>
+      <input type="password" name="password" placeholder="Password (8-20 Characters)" required>
+      <input type="text" name="classcode" placeholder="Class Code (8-20 Characters)" required>
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+</body>
+</html>

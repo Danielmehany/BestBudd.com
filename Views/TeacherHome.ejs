@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Home</title>
+  <!-- Optional: Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnH/PRoQyJNnZ2OJJF+L0ISZrX5FvM6xU2fxhqHKqBsoj8N4e+LZ5T6N9cEplCW1z6+Rm4o5Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* General Body & Fixed Background */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("/Views/BG1.png") no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Banner & Log Out Button */
+    .banner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      padding: 40px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      border-bottom: 3px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .banner h1 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-60%);
+      margin: 0;
+      font-size: 35px;
+      font-weight: 600;
+      color: #333;
+    }
+    .home-button {
+      position: absolute;
+      left: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: #9b4dff;
+      padding: 12px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      z-index: 101;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .home-button i {
+      font-size: 28px;
+    }
+    .home-button:hover {
+      background-color: #7a00ff;
+      transform: translateY(-3px);
+    }
+
+    /* Main container wrapper */
+    .main-wrapper {
+        padding: 120px 20px 20px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* Background container that will shift the background */
+    .background-shifter {
+      position: absolute;
+      width: 100%;
+      height: calc(100vh - 170px);
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      z-index: -1;
+      opacity: 0.0;
+    }
+
+    /* Main content container with two columns */
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px; /* Reduced from 40px */
+      position: relative;
+      width: 90%;
+    }
+
+    /* Column containers */
+    .column {
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      padding: 15px; /* Reduced from 20px */
+      box-sizing: border-box;
+      height: calc(100vh - 170px);
+      border: 3px solid #ccc;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Column headers */
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 10px;
+      z-index: 5;
+    }
+    .column-header h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+    .column-header .subheader {
+      font-size: 16px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* Scrollable containers */
+    .student-list, .reminder-list {
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-grow: 1;
+      padding-right: 5px;
+    }
+    
+    /* Scrollbar styling */
+    .student-list::-webkit-scrollbar, .reminder-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    .student-list::-webkit-scrollbar-thumb, .reminder-list::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      border-radius: 4px;
+    }
+    .student-list::-webkit-scrollbar-track, .reminder-list::-webkit-scrollbar-track {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Student list items */
+    .student-item {
+      position: relative;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      padding: 12px; /* Reduced from 15px */
+      margin-bottom: 8px; /* Reduced from 10px */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .student-name {
+      font-size: 1.1rem; /* Reduced from 1.2rem */
+      color: #333;
+    }
+    .student-actions {
+      display: flex;
+      gap: 8px; /* Reduced from 10px */
+    }
+    .view-button, .remove-button {
+      padding: 6px 10px; /* Reduced from 8px 12px */
+      border: 2px solid #040404;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.3s;
+      font-size: 0.9rem; /* Reduced from default */
+    }
+    .view-button {
+      background-color: #2196F3;
+      color: white;
+    }
+    .view-button:hover {
+      background-color: #1976D2;
+      transform: translateY(-2px);
+    }
+    .remove-button {
+      background-color: #e74c3c;
+      color: white;
+    }
+    .remove-button:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .reminder-item {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      margin: 8px 0; /* Reduced from 10px 0 */
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      min-height: 70px; /* Reduced from 70px */
+      padding: 12px 50px 12px 15px; /* Adjusted padding */
+      box-sizing: border-box;
+    }
+    .reminder-text {
+      flex: 1;
+      font-size: 1.1rem; /* Reduced from 1.2rem */
+      color: #333;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      padding-right: 15px; /* Added space for border */
+      align-items: center;
+    }
+
+    /* Delete Button for reminders with border */
+    .delete-button {
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 0.5em 0.5em 0.5em 2.0em; /* Adjusted padding for border */
+      border: none;
+      background: transparent;
+      fill: #e74c3c;
+      cursor: pointer;
+      font-size: 1em;
+      transition: transform 0.2s ease;
+      border-left: 2px solid rgba(204, 204, 204, 0.9); /* Added border */
+      
+    }
+    .trash-svg {
+      width: 1.8em; /* Slightly reduced */
+      height: 1.8em;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      overflow: visible;
+    }
+    #lid-group {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .delete-button:hover #lid-group {
+      transform: rotate(-28deg) translateY(2px);
+    }
+    .delete-button:active #lid-group {
+      transform: rotate(-12deg) scale(0.98);
+    }
+    .delete-button:hover .trash-svg {
+      transform: scale(1.08) rotate(3deg);
+    }
+    .delete-button:active .trash-svg {
+      transform: scale(0.96) rotate(-1deg);
+    }
+
+    /* Popup styles */
+    .popup, .error-popup, .confirmation-popup { box-sizing: border-box; }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px; /* Reduced from 25px */
+      border: 2px solid #ccc;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 340px; /* Slightly reduced */
+      z-index: 1000;
+    }
+    .popup textarea {
+      width: 88%;
+      min-height: 60px;
+      resize: vertical;
+      padding: 12px; /* Reduced from 15px */
+      margin: 10px 0; /* Reduced from 12px */
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px; /* Reduced from 16px */
+    }
+    .popup button {
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #424242;
+      padding: 16px; /* Reduced from 20px */
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 48%;
+      margin: 4px 0; /* Reduced from 5px */
+      transition: background-color 0.3s ease;
+    }
+    .popup button:hover { background-color: #45a049; }
+    .popup .cancel {
+      background-color: red;
+      border: 2px solid #424242;
+    }
+    .popup .cancel:hover { background-color: #c00000; }
+
+    .error-popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 18px; /* Reduced from 20px */
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 1100;
+      max-width: 80%;
+      text-align: center;
+      font-size: 1.1rem; /* Reduced from 1.2rem */
+      color: #721c24;
+    }
+    .close-error {
+      background: transparent;
+      border: none;
+      font-size: 18px; /* Reduced from 20px */
+      position: absolute;
+      top: 3px;
+      right: 1px;
+      cursor: pointer;
+      color: #721c24;
+    }
+    .close-error:hover { transform: translateY(-2px); }
+
+    .confirmation-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgb(255,216,216);
+      padding: 20px; /* Reduced from 25px */
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 340px; /* Reduced from 350px */
+      z-index: 1100;
+      text-align: center;
+      border: 2px solid #040404;
+    }
+    .confirmation-popup p {
+      font-size: 17px; /* Reduced from 18px */
+      margin-bottom: 18px; /* Reduced from 20px */
+      color: #333;
+    }
+    .confirmation-popup button {
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #040404;
+      padding: 8px 16px; /* Reduced from 10px 20px */
+      font-size: 15px; /* Reduced from 16px */
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0 8px; /* Reduced from 10px */
+      transition: background-color 0.3s ease;
+    }
+    .confirmation-popup button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    .confirmation-popup .cancel {
+      background-color: red;
+    }
+    .confirmation-popup .cancel:hover {
+      background-color: #c00000;
+      transform: translateY(-2px);
+    }
+
+    /* Add Reminder Button */
+    .add-reminder-button {
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #040404;
+      padding: 6px 10px; /* Reduced from 8px 12px */
+      font-size: 15px; /* Reduced from 16px */
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .add-reminder-button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    .add-reminder-button span {
+      font-size: 18px; /* Reduced from 20px */
+      margin-right: 4px; /* Reduced from 5px */
+    }
+
+    #mobilePopup {
+    display: none;
+  }
+
+  /* when width ≤750px OR height ≤500px, show overlay & disable scrolling */
+  @media (max-width: 750px), (max-height: 500px) {
+    html, body {
+      overflow: hidden;    /* lock the viewport */
+      height: 100%;        /* ensure no extra scroll space */
+    }
+    #mobilePopup {
+      display: flex;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #mobilePopup .popup-content {
+      background: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 8px;
+      font-size: 1.25rem;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  }
+  </style>
+</head>
+<body>
+  <div id="mobilePopup">
+    <div class="popup-content">
+      Your screen is too small for this view
+    </div>
+  </div>
+  <!-- Hidden logout form -->
+  <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+
+  <!-- Banner & Log Out -->
+  <div class="banner">
+    <button class="home-button" onclick="openLogoutPopup()">
+      <i class="fas fa-sign-out-alt"></i><span>Log Out</span>
+    </button>
+    <h1 id="pageTitle">Welcome <%= user.username %> To Your Class</h1>
+  </div>
+
+  <!-- Error Popup -->
+  <div class="error-popup" id="errorPopup" <% if (errors && errors.length) { %>style="display:block;"<% } %>>
+    <button class="close-error" onclick="closeError()">X</button>
+    <span id="errorMessageText"><%= (errors||[]).join(", ") %></span>
+  </div>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <!-- Background shifter container -->
+    <div class="background-shifter"></div>
+    
+    <!-- Main Container with Two Columns -->
+    <div class="main-container">
+      <!-- Left Column: Class List -->
+      <div class="column">
+        <div class="column-header">
+          <div>
+            <h2>Class List</h2>
+            <div class="subheader">Class Code: <%= user.classcode %></div>
+          </div>
+        </div>
+        
+        <div class="student-list">
+          <% if (students && students.length) { %>
+            <% students.forEach(function(student) { %>
+              <div class="student-item">
+                <div class="student-name"><%= student.username %></div>
+                <div class="student-actions">
+                  <button class="view-button" onclick="location.href='/student-teacher-view/<%= student.id %>'">View</button>
+                  <button class="remove-button" onclick="openRemoveStudentPopup('<%= student.id %>')">Remove</button>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p></p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Right Column: Class Reminders -->
+      <div class="column">
+        <div class="column-header">
+          <h2>Class Reminders</h2>
+          <button class="add-reminder-button" onclick="togglePopup()">
+            <span>+</span> Add
+          </button>
+        </div>
+        
+        <div class="reminder-list">
+          <% if (classReminders && classReminders.length) { %>
+            <% classReminders.forEach(function(reminder) { %>
+              <div class="reminder-item">
+                <div class="reminder-text"><%= reminder.reminder %></div>
+                <button class="delete-button" onclick="openDeletePopup('<%= reminder.id %>')" aria-label="Delete">
+                  <svg class="trash-svg" viewBox="64 -10 64 74" xmlns="http://www.w3.org/2000/svg">
+                    <g id="trash-can">
+                      <rect x="16" y="24" width="32" height="30" rx="3" ry="3"></rect>
+                      <g id="lid-group" transform-origin="12 18">
+                        <rect x="12" y="12" width="40" height="6" rx="2" ry="2"></rect>
+                        <rect x="26" y="8" width="12" height="4" rx="2" ry="2"></rect>
+                      </g>
+                    </g>
+                  </svg>
+                </button>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p></p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Reminder Popup -->
+  <div class="popup" id="popup">
+    <h3>Add a New Class Reminder</h3>
+    <form id="reminderForm" action="/create-class-reminder" method="POST">
+      <textarea name="reminder" id="reminder" placeholder="Class Reminder (Max 250 chars)" maxlength="250" required></textarea>
+      <button type="button" onclick="saveReminder()">Save</button>
+      <button type="button" class="cancel" onclick="closePopup()">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Delete Confirmation -->
+  <div class="confirmation-popup" id="deletePopup">
+    <p>Are you sure you want to delete this reminder?</p>
+    <button onclick="deleteConfirm()">Yes</button>
+    <button class="cancel" onclick="closeDeletePopup()">No</button>
+  </div>
+
+  <!-- Remove Student Confirmation -->
+  <div class="confirmation-popup" id="removeStudentPopup">
+    <p>Are you sure you want to remove this student from your class?</p>
+    <button onclick="removeStudentConfirm()">Yes</button>
+    <button class="cancel" onclick="closeRemoveStudentPopup()">No</button>
+  </div>
+
+  <!-- Log Out Confirmation -->
+  <div class="confirmation-popup" id="logoutPopup">
+    <p>Are you sure you want to log out?</p>
+    <button onclick="confirmLogout()">Yes</button>
+    <button class="cancel" onclick="closeLogoutPopup()">No</button>
+  </div>
+
+  <script>
+    let currentDeleteId = null;
+    let currentStudentId = null;
+
+    /* Add reminder popup */
+    function togglePopup() {
+      const p = document.getElementById('popup');
+      if (p.style.display === 'block') {
+        p.style.display = 'none';
+      } else {
+        p.style.display = 'block';
+      }
+    }
+    
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('reminder').value = '';
+    }
+    
+    function saveReminder() {
+      const txt = document.getElementById('reminder').value.trim();
+      if (!txt) { 
+        showError("Please enter a reminder."); 
+        return; 
+      }
+      if (txt.length > 250) { 
+        showError("Reminder must be ≤250 chars."); 
+        return; 
+      }
+      document.getElementById('reminderForm').submit();
+    }
+
+    /* Delete reminder logic */
+    function openDeletePopup(id) {
+      currentDeleteId = id;
+      document.getElementById('deletePopup').style.display = 'block';
+    }
+    
+    function deleteConfirm() {
+      if (!currentDeleteId) return;
+      const f = document.createElement('form');
+      f.method = 'POST';
+      f.action = '/delete-class-reminder/' + currentDeleteId;
+      document.body.appendChild(f);
+      f.submit();
+    }
+    
+    function closeDeletePopup() {
+      document.getElementById('deletePopup').style.display = 'none';
+      currentDeleteId = null;
+    }
+
+    /* Remove student logic */
+    function openRemoveStudentPopup(id) {
+      currentStudentId = id;
+      document.getElementById('removeStudentPopup').style.display = 'block';
+    }
+    
+    function removeStudentConfirm() {
+      if (!currentStudentId) return;
+      const f = document.createElement('form');
+      f.method = 'POST';
+      f.action = '/remove-student/' + currentStudentId;
+      document.body.appendChild(f);
+      f.submit();
+    }
+    
+    function closeRemoveStudentPopup() {
+      document.getElementById('removeStudentPopup').style.display = 'none';
+      currentStudentId = null;
+    }
+
+    /* Error handling */
+    function showError(msg) {
+      const ep = document.getElementById('errorPopup');
+      document.getElementById('errorMessageText').textContent = msg;
+      ep.style.display = 'block';
+    }
+    
+    function closeError() {
+      document.getElementById('errorPopup').style.display = 'none';
+    }
+
+    /* Log Out */
+    function openLogoutPopup() {
+      document.getElementById('logoutPopup').style.display = 'block';
+    }
+    
+    function closeLogoutPopup() {
+      document.getElementById('logoutPopup').style.display = 'none';
+    }
+    
+    function confirmLogout() {
+      document.getElementById('logoutForm').submit();
+    }
+  </script>
+</body>
+</html>
