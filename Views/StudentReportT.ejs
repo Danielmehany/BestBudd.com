@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= user.username %>'s Reflection Report</title>
+  <!-- Optional: Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-Fo3rlrZj/k7ujTnH/PRoQyJNnZ2OJJF+L0ISZrX5FvM6xU2fxhqHKqBsoj8N4e+LZ5T6N9cEplCW1z6+Rm4o5Q=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("/Views/BG1.png") no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Banner */
+    .banner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      padding: 40px;
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      z-index: 100;
+      border-bottom: 3px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .banner h1 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-63%);
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #333;
+    }
+    .home-button {
+      position: absolute;
+      left: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: #9b4dff;
+      padding: 12px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.3s;
+      z-index: 101;
+    }
+    .home-button i {
+        font-size: 28px;
+    }
+    .home-button:hover {
+      background-color: #7a00ff;
+      transform: translateY(-2px);
+    }
+
+    /* Container */
+    .container {
+      padding: 120px 20px 20px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Each rating entry */
+    .entry {
+      position: relative;
+      width: 800px;
+      max-width: 90%;
+      margin: 10px auto;
+      background-color: rgba(255,255,255,0.9);
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+    .reminder-text {
+      flex: 1;
+      font-size: 1.8rem;
+      color: #333;
+    }
+    .rating-value {
+      margin-left: 20px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Notes Section */
+    .notes-block {
+      width: 800px;
+      max-width: 90%;
+      background-color: rgba(255,255,255,0.9);
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      box-sizing: border-box;
+      margin-top: 20px;
+    }
+    .notes-block h2 {
+      margin-top: 0;
+      font-weight: 600;
+      color: #333;
+    }
+    .notes-block .note-label {
+      font-weight: bold;
+      margin-top: 10px;
+      color: #333;
+    }
+    .notes-block .note-text {
+      margin-top: 5px;
+      padding: 8px;
+      background-color: white;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      min-height: 60px;
+      box-sizing: border-box;
+      color: #333;
+      font-size: 1rem;
+      white-space: pre-wrap;
+    }
+
+    #mobilePopup {
+    display: none;
+  }
+
+  /* when width ≤750px OR height ≤500px, show overlay & disable scrolling */
+  @media (max-width: 750px), (max-height: 500px) {
+    html, body {
+      overflow: hidden;    /* lock the viewport */
+      height: 100%;        /* ensure no extra scroll space */
+    }
+    #mobilePopup {
+      display: flex;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #mobilePopup .popup-content {
+      background: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 8px;
+      font-size: 1.25rem;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  }
+  </style>
+</head>
+<body>
+  <div id="mobilePopup">
+    <div class="popup-content">
+      Your screen is too small for this view
+    </div>
+  </div>
+  <!-- Banner -->
+  <div class="banner">
+    <button
+      class="home-button"
+      onclick="window.location.href='/student-teacher-view/<%= user.id %>'"
+    >
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </button>
+    <h1><%= user.username %>'s Reflection Report</h1>
+  </div>
+
+  <div class="container">
+    <!-- Show each reminder (personal & class) -->
+    <% report.forEach(item => { %>
+      <div class="entry">
+        <div class="reminder-text">
+          <%= item.text %>
+          <% if (item.source === 'class') { %>
+            <span style="font-size:0.9rem;color:#2196F3;margin-left:8px;"></span>
+          <% } %>
+        </div>
+        <div class="rating-value"><%= item.rating %>/10</div>
+      </div>
+    <% }) %>
+
+    <!-- Read‑only Strength & Weakness -->
+    <div class="notes-block">
+      <h2>Daily Strength & Weakness</h2>
+      <div class="note-label">Strength:</div>
+      <div class="note-text"><%= notes.strength || '—' %></div>
+      <div class="note-label">Weakness:</div>
+      <div class="note-text"><%= notes.weakness || '—' %></div>
+    </div>
+  </div>
+</body>
+</html>
