@@ -12,7 +12,7 @@ db.pragma("journal_mode = WAL");
 const app = express();
 
 // Middleware setup
-app.use("/Views", express.static(path.join(__dirname, "Views")));
+app.use("/views", express.static(path.join(__dirname, "views")));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
