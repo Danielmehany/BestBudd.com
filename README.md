@@ -38,8 +38,8 @@ BestBudd.com is a web application built with **Node.js**, **SQLite**, **EJS**, a
 ## 🛠️ Tech Stack
 
 - **Runtime**: Node.js  
-- **View Layer**: EJS templates (HTML/CSS/JS)  
-- **Database**: SQLite (lightweight, file-based)  
+- **View Layer**: EJS templates   
+- **Database**: SQLite  
 - **Authentication**: Session cookies + simple login forms  
 - **Styling**: Custom CSS with responsive layouts  
 
