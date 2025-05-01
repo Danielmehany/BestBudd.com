@@ -5,7 +5,11 @@ const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const path = require("path");
-const db = require("better-sqlite3")("BestBudd.db");
+//const db = require("better-sqlite3")("BestBudd.db");
+
+const DB_FILE = process.env.DATABASE_PATH || path.join("/data", "BestBudd.db");
+const Database = require("better-sqlite3");
+const db = new Database(DB_FILE);
 
 // Database setup
 db.pragma("journal_mode = WAL");
